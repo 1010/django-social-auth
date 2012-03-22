@@ -170,7 +170,7 @@ def complete_process(request, backend, *args, **kwargs):
                 request.session[REDIRECT_FIELD_NAME] = redirect_value or \
                                                        DEFAULT_REDIRECT
 
-            if setting('SOCIAL_AUTH_SESSION_EXPIRATION', True):
+            if setting('SOCIAL_AUTH_SESSION_EXPIRATION', True) and hasattr(social_user, 'expiration_delta'):
                 # Set session expiration date if present and not disabled by
                 # setting. Use last social-auth instance for current provider,
                 # users can associate several accounts with a same provider.
@@ -180,7 +180,7 @@ def complete_process(request, backend, *args, **kwargs):
             # store last login backend name in session
             key = setting('SOCIAL_AUTH_LAST_LOGIN',
                           'social_auth_last_login_backend')
-            request.session[key] = social_user.provider
+            request.session[key] = backend.AUTH_BACKEND.name
 
             # Remove possible redirect URL from session, if this is a new
             # account, send him to the new-users-page if defined.
